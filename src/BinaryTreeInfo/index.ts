@@ -24,10 +24,12 @@ export default class BinaryTreeInfo {
   private tree: any
   private ctx: CanvasRenderingContext2D
   private options: any
+  private points: Array<any>
   constructor(tree, ctx, options) {
     this.tree = tree
     this.ctx = ctx
     this.options = options
+    this.points = []
   }
 
   static async print(tree, options) {
@@ -57,6 +59,8 @@ export default class BinaryTreeInfo {
     const rectWidth = getWidth(text)
     ctx.save()
     ctx.translate(x, y)
+    const { e, f } = ctx['currentTransform']
+    this.points.push([e, e + rectWidth, f])
     // 1. 最外层
     ctx.fillStyle = lineColor
     ctx.fillRect(0, 0, rectWidth, rectHeight)
@@ -82,27 +86,41 @@ export default class BinaryTreeInfo {
    */
   drawLeft(left, x, y) {
     if (left === null) return
-    const { ctx, options: { rectHeight, lineColor } } = this
-    var content = this.tree.getString(left)
-    var text = ctx.measureText(content)
+    const { ctx, options } = this
+    const { rectHeight } = options
+    const content = left.element.toString()
+    const text = ctx.measureText(content)
     const currentRectWidth = getWidth(text)
-    const leftRectWidth = this.getLineWidth(left)
-    const destX = x - (leftRectWidth >> 1)
-    const destY = y + rectHeight
+    const leftRectWidth = currentRectWidth // getLineWidth(left)
+    let destX = x - (leftRectWidth)
+    let destY = y + rectHeight
+    let newNodePoint = [destX - (currentRectWidth >> 1), destY]
+    const chongdieDistance = this.overlap(
+      newNodePoint[0], newNodePoint[1], currentRectWidth
+    )
+    if (chongdieDistance > 0) {
+      destX = destX + 15
+      newNodePoint = [destX - (currentRectWidth >> 1), destY]
+      options.lineColor = 'rgba(64,158,255,.7)'
+      options.rectColor = 'rgba(249, 38, 114,.5)'
+    } else {
+      options.lineColor = 'rgba(66,66,66,1)'
+      options.rectColor = 'rgba(249, 38, 114,1)'
+    }
     ctx.beginPath();
     ctx.moveTo(x, y)
-    ctx.lineTo(x - (leftRectWidth >> 1), y)
+    ctx.lineTo(destX, y)
     ctx.lineTo(destX, destY)
     ctx.lineTo(destX - 5, destY - 5)
     ctx.lineTo(destX, destY)
     ctx.lineTo(destX + 5, destY - 5)
     ctx.save()
-    ctx.strokeStyle = lineColor
+    ctx.strokeStyle = options.lineColor
     ctx.lineWidth = 2
     ctx.stroke()
     ctx.restore()
     ctx.closePath()
-    this.drawNode(left, destX - (currentRectWidth >> 1), destY)
+    this.drawNode(left, newNodePoint[0], newNodePoint[1])
   }
 
   /**
@@ -112,40 +130,57 @@ export default class BinaryTreeInfo {
    * @param y 
    */
   drawRight(right, x, y) {
-    const { ctx, options: { rectHeight, lineColor } } = this
     if (right === null) return
-    var content = this.tree.getString(right)
-    var text = ctx.measureText(content)
+    const { ctx, options } = this
+    const { rectHeight } = options
+    const content = right.element.toString()
+    const text = ctx.measureText(content)
     const currentRectWidth = getWidth(text)
-    const rightRectWidth = this.getLineWidth(right)
-    const destX = x + (rightRectWidth >> 1)
-    const destY = y + rectHeight
+    const rightRectWidth = currentRectWidth // getLineWidth(right)
+    let destX = x + (rightRectWidth)
+    let destY = y + rectHeight
+    let newNodePoint = [destX - (currentRectWidth >> 1), destY]
+    const chongdieDistance = this.overlap(
+      newNodePoint[0], newNodePoint[1], currentRectWidth
+    )
+    if (chongdieDistance > 0) {
+      destX = destX + 15
+      newNodePoint = [destX - (currentRectWidth >> 1), destY]
+      options.lineColor = 'rgba(64,158,255,.7)'
+      options.rectColor = 'rgba(249, 38, 114,.5)'
+    } else {
+      options.lineColor = 'rgba(66,66,66,1)'
+      options.rectColor = 'rgba(249, 38, 114,1)'
+    }
     ctx.beginPath();
     ctx.moveTo(x, y)
-    ctx.lineTo(x + (rightRectWidth >> 1), y)
+    ctx.lineTo(destX, y)
     ctx.lineTo(destX, destY)
     ctx.lineTo(destX - 5, destY - 5)
     ctx.lineTo(destX, destY)
     ctx.lineTo(destX + 5, destY - 5)
     ctx.save()
-    ctx.strokeStyle = lineColor
+    ctx.strokeStyle = options.lineColor
     ctx.lineWidth = 2
     ctx.stroke()
     ctx.restore()
     ctx.closePath()
-    this.drawNode(right, destX - (currentRectWidth >> 1), destY)
+    this.drawNode(right, newNodePoint[0], newNodePoint[1])
   }
 
-  private getLineWidth(node) {
-    const { ctx, tree } = this
-    let width = 0
-    if (node) {
-      let content = tree.getString(node)
-      let text = ctx.measureText(content)
-      width += getWidth(text)
-      width += this.getLineWidth(tree.getLeft(node))
-      width += this.getLineWidth(tree.getRight(node))
+  private overlap(x, y, w) {
+    const ctx = this.ctx
+    const { e, f } = ctx['currentTransform']
+    x += e
+    y += f
+    let distance = 0
+    let isChongdie = this.points.some(([pointL, pointR, pointY]) => {
+      distance = pointR - x
+      return !(pointY !== y || x > pointR || x + w < pointL)
+    })
+    if (isChongdie) {
+      return distance
     }
-    return width
+    return 0
   }
 }

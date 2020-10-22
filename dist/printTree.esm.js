@@ -78,6 +78,7 @@ var BinaryTreeInfo = /** @class */ (function () {
         this.tree = tree;
         this.ctx = ctx;
         this.options = options;
+        this.points = [];
     }
     BinaryTreeInfo.print = function (tree, options) {
         return __awaiter(this, void 0, void 0, function () {
@@ -117,6 +118,8 @@ var BinaryTreeInfo = /** @class */ (function () {
         var rectWidth = getWidth(text);
         ctx.save();
         ctx.translate(x, y);
+        var _c = ctx['currentTransform'], e = _c.e, f = _c.f;
+        this.points.push([e, e + rectWidth, f]);
         // 1. 最外层
         ctx.fillStyle = lineColor;
         ctx.fillRect(0, 0, rectWidth, rectHeight);
@@ -139,27 +142,40 @@ var BinaryTreeInfo = /** @class */ (function () {
     BinaryTreeInfo.prototype.drawLeft = function (left, x, y) {
         if (left === null)
             return;
-        var _a = this, ctx = _a.ctx, _b = _a.options, rectHeight = _b.rectHeight, lineColor = _b.lineColor;
-        var content = this.tree.getString(left);
+        var _a = this, ctx = _a.ctx, options = _a.options;
+        var rectHeight = options.rectHeight;
+        var content = left.element.toString();
         var text = ctx.measureText(content);
         var currentRectWidth = getWidth(text);
-        var leftRectWidth = this.getLineWidth(left);
-        var destX = x - (leftRectWidth >> 1);
+        var leftRectWidth = currentRectWidth; // getLineWidth(left)
+        var destX = x - (leftRectWidth);
         var destY = y + rectHeight;
+        var newNodePoint = [destX - (currentRectWidth >> 1), destY];
+        var chongdieDistance = this.overlap(newNodePoint[0], newNodePoint[1], currentRectWidth);
+        if (chongdieDistance > 0) {
+            destX = destX + 15;
+            newNodePoint = [destX - (currentRectWidth >> 1), destY];
+            options.lineColor = 'rgba(64,158,255,.7)';
+            options.rectColor = 'rgba(249, 38, 114,.5)';
+        }
+        else {
+            options.lineColor = 'rgba(66,66,66,1)';
+            options.rectColor = 'rgba(249, 38, 114,1)';
+        }
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(x - (leftRectWidth >> 1), y);
+        ctx.lineTo(destX, y);
         ctx.lineTo(destX, destY);
         ctx.lineTo(destX - 5, destY - 5);
         ctx.lineTo(destX, destY);
         ctx.lineTo(destX + 5, destY - 5);
         ctx.save();
-        ctx.strokeStyle = lineColor;
+        ctx.strokeStyle = options.lineColor;
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
         ctx.closePath();
-        this.drawNode(left, destX - (currentRectWidth >> 1), destY);
+        this.drawNode(left, newNodePoint[0], newNodePoint[1]);
     };
     /**
      * 绘制线段 & 节点
@@ -168,41 +184,58 @@ var BinaryTreeInfo = /** @class */ (function () {
      * @param y
      */
     BinaryTreeInfo.prototype.drawRight = function (right, x, y) {
-        var _a = this, ctx = _a.ctx, _b = _a.options, rectHeight = _b.rectHeight, lineColor = _b.lineColor;
         if (right === null)
             return;
-        var content = this.tree.getString(right);
+        var _a = this, ctx = _a.ctx, options = _a.options;
+        var rectHeight = options.rectHeight;
+        var content = right.element.toString();
         var text = ctx.measureText(content);
         var currentRectWidth = getWidth(text);
-        var rightRectWidth = this.getLineWidth(right);
-        var destX = x + (rightRectWidth >> 1);
+        var rightRectWidth = currentRectWidth; // getLineWidth(right)
+        var destX = x + (rightRectWidth);
         var destY = y + rectHeight;
+        var newNodePoint = [destX - (currentRectWidth >> 1), destY];
+        var chongdieDistance = this.overlap(newNodePoint[0], newNodePoint[1], currentRectWidth);
+        if (chongdieDistance > 0) {
+            destX = destX + 15;
+            newNodePoint = [destX - (currentRectWidth >> 1), destY];
+            options.lineColor = 'rgba(64,158,255,.7)';
+            options.rectColor = 'rgba(249, 38, 114,.5)';
+        }
+        else {
+            options.lineColor = 'rgba(66,66,66,1)';
+            options.rectColor = 'rgba(249, 38, 114,1)';
+        }
         ctx.beginPath();
         ctx.moveTo(x, y);
-        ctx.lineTo(x + (rightRectWidth >> 1), y);
+        ctx.lineTo(destX, y);
         ctx.lineTo(destX, destY);
         ctx.lineTo(destX - 5, destY - 5);
         ctx.lineTo(destX, destY);
         ctx.lineTo(destX + 5, destY - 5);
         ctx.save();
-        ctx.strokeStyle = lineColor;
+        ctx.strokeStyle = options.lineColor;
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
         ctx.closePath();
-        this.drawNode(right, destX - (currentRectWidth >> 1), destY);
+        this.drawNode(right, newNodePoint[0], newNodePoint[1]);
     };
-    BinaryTreeInfo.prototype.getLineWidth = function (node) {
-        var _a = this, ctx = _a.ctx, tree = _a.tree;
-        var width = 0;
-        if (node) {
-            var content = tree.getString(node);
-            var text = ctx.measureText(content);
-            width += getWidth(text);
-            width += this.getLineWidth(tree.getLeft(node));
-            width += this.getLineWidth(tree.getRight(node));
+    BinaryTreeInfo.prototype.overlap = function (x, y, w) {
+        var ctx = this.ctx;
+        var _a = ctx['currentTransform'], e = _a.e, f = _a.f;
+        x += e;
+        y += f;
+        var distance = 0;
+        var isChongdie = this.points.some(function (_a) {
+            var pointL = _a[0], pointR = _a[1], pointY = _a[2];
+            distance = pointR - x;
+            return !(pointY !== y || x > pointR || x + w < pointL);
+        });
+        if (isChongdie) {
+            return distance;
         }
-        return width;
+        return 0;
     };
     return BinaryTreeInfo;
 }());
