@@ -1,5 +1,5 @@
 {
-  "name": "print-tree",
+  "name": "print-trees",
   "version": "1.0.0",
   "main": "dist/printTree.cjs.js",
   "module": "dist/printTree.esm.js",
