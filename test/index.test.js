@@ -1,11 +1,3 @@
-# print-tree
-In terminal print tree data structure
-
-在学习数据结构中，二叉树显然是个非常重要的知识点，为了更方便的查看一个二叉树的结构，所以基于`node-canvas`、`erminal-image`绘制出可视化的二叉树到控制台中，便于学习理解二叉树的一些算法。
-
-## Example
-
-``` js
 const { BinaryTreeInfo } = require('../')
 class Node {
   constructor(element, left=null, right=null, parent=null) {
@@ -40,9 +32,3 @@ BinaryTreeInfo.print(new Tree(root), {
   canvasWidth: 600,
   canvasHeight: 300,
 })
-
-```
-
-> 运行效果
-
-![image.png](./image.png)

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <script>
+    class Node {
+      constructor(element, left=null, right=null, parent=null) {
+        this.element = element
+        this.left = left
+        this.right = right
+        this.parent = parent
+      }
+    }
+    const root = new Node(1)
+    root.left = new Node(2)
+    root.right = new Node(3)
+    root.left.left = new Node(4)
+    root.left.right = new Node(5)
+    root.right.left = new Node(6)
+    root.right.right = new Node(7)
+    const tree = {
+      root
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius){
+      ctx.beginPath();
+      ctx.moveTo(x, y + radius);
+      ctx.lineTo(x, y + height - radius);
+      ctx.quadraticCurveTo(x, y + height, x + radius, y + height);
+      ctx.lineTo(x + width - radius, y + height);
+      ctx.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
+      ctx.lineTo(x + width, y + radius);
+      ctx.quadraticCurveTo(x + width, y, x + width - radius, y);
+      ctx.lineTo(x + radius, y);
+      ctx.quadraticCurveTo(x, y, x, y + radius);
+      ctx.fill();
+    }
+  </script>
+  <script>
+    let lineColor = 'rgb(66,66,66)'
+    let rectColor = 'rgb(249, 38, 114)'
+    let fontColor = '#fff'
+    let rectHeight = 30
+
+    const canvas = document.getElementById('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 500
+
+    function draw() {
+      ctx.font = 'bold 16px Consolas'
+      ctx.textAlign = 'center'
+      let startPoint = [canvas.width >> 1, 30]
+      drawNode(tree.root, ...startPoint)
+    }
+    draw()
+
+    function drawNode(node, x, y) {
+      const content = node.element.toString()
+      const text = ctx.measureText(content)
+      const rectWidth = getWidth(text)
+      ctx.save()
+      ctx.translate(x, y)
+      // 1. 最外层
+      ctx.fillStyle = lineColor
+      ctx.fillRect(0, 0, rectWidth, rectHeight)
+
+      // 2. 红色层
+      ctx.fillStyle = rectColor
+      ctx.fillRect(2, 2, rectWidth - 4, rectHeight - 4)
+
+      // 3. 内容
+      ctx.fillStyle = fontColor
+      ctx.fillText(content, rectWidth >> 1, (rectHeight >> 1) + 6)
+
+      drawLeft(node.left, 0, rectHeight >> 1)
+      drawRight(node.right, rectWidth, rectHeight >> 1)
+      ctx.restore()
+    }
+
+    function drawLeft(left, x, y) {
+      if (left === null) return
+      var content = left.element.toString()
+      var text = ctx.measureText(content)
+      const currentRectWidth = getWidth(text)
+      const leftRectWidth = getLineWidth(left)
+      const destX = x - (leftRectWidth >> 1)
+      const destY = y + rectHeight
+      ctx.beginPath();
+      ctx.moveTo(x, y)
+      ctx.lineTo(x - (leftRectWidth >> 1), y)
+      ctx.lineTo(destX, destY)
+      ctx.lineTo(destX - 5, destY - 5)
+      ctx.lineTo(destX, destY)
+      ctx.lineTo(destX + 5, destY - 5)
+      ctx.save()
+      ctx.strokeStyle = lineColor
+      ctx.lineWidth = 2
+      ctx.stroke()
+      ctx.restore()
+      ctx.closePath()
+      drawNode(left, destX - (currentRectWidth >> 1), destY)
+    }
+    function drawRight(right, x, y) {
+      if (right === null) return
+      var content = right.element.toString()
+      var text = ctx.measureText(content)
+      const currentRectWidth = getWidth(text)
+      const rightRectWidth = getLineWidth(right)
+      const destX = x + (rightRectWidth >> 1)
+      const destY = y + rectHeight
+      ctx.beginPath();
+      ctx.moveTo(x, y)
+      ctx.lineTo(x + (rightRectWidth >> 1), y)
+      ctx.lineTo(destX, destY)
+      ctx.lineTo(destX - 5, destY - 5)
+      ctx.lineTo(destX, destY)
+      ctx.lineTo(destX + 5, destY - 5)
+      ctx.save()
+      ctx.strokeStyle = lineColor
+      ctx.lineWidth = 2
+      ctx.stroke()
+      ctx.restore()
+      ctx.closePath()
+      drawNode(right, destX - (currentRectWidth >> 1), destY)
+    }
+
+    function getLineWidth(node) {
+      let width = 0
+      if (node) {
+        let content = node.element.toString()
+        let text = ctx.measureText(content)
+        width += getWidth(text)
+        width += getLineWidth(node.left)
+        width += getLineWidth(node.right)
+      }
+      return width
+    }
+
+    function getWidth(text, padding = 20, mini = 50) {
+      return Math.max(text.width + padding, mini)
+    }
+    // drawNode(tree.root)
+  </script>
+</body>
+</html>
