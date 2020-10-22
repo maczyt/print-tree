@@ -116,7 +116,7 @@ var BinaryTreeInfo = /** @class */ (function () {
      */
     BinaryTreeInfo.prototype.drawNode = function (node, x, y) {
         var _a = this, ctx = _a.ctx, _b = _a.options, lineColor = _b.lineColor, rectColor = _b.rectColor, fontColor = _b.fontColor, rectHeight = _b.rectHeight;
-        var content = node.element.toString();
+        var content = this.tree.getString(node);
         var text = ctx.measureText(content);
         var rectWidth = getWidth(text);
         ctx.save();
@@ -144,7 +144,7 @@ var BinaryTreeInfo = /** @class */ (function () {
         if (left === null)
             return;
         var _a = this, ctx = _a.ctx, _b = _a.options, rectHeight = _b.rectHeight, lineColor = _b.lineColor;
-        var content = left.element.toString();
+        var content = this.tree.getString(left);
         var text = ctx.measureText(content);
         var currentRectWidth = getWidth(text);
         var leftRectWidth = this.getLineWidth(left);
@@ -175,7 +175,7 @@ var BinaryTreeInfo = /** @class */ (function () {
         var _a = this, ctx = _a.ctx, _b = _a.options, rectHeight = _b.rectHeight, lineColor = _b.lineColor;
         if (right === null)
             return;
-        var content = right.element.toString();
+        var content = this.tree.getString(right);
         var text = ctx.measureText(content);
         var currentRectWidth = getWidth(text);
         var rightRectWidth = this.getLineWidth(right);
@@ -200,7 +200,7 @@ var BinaryTreeInfo = /** @class */ (function () {
         var _a = this, ctx = _a.ctx, tree = _a.tree;
         var width = 0;
         if (node) {
-            var content = node.element.toString();
+            var content = tree.getString(node);
             var text = ctx.measureText(content);
             width += getWidth(text);
             width += this.getLineWidth(tree.getLeft(node));

@@ -52,7 +52,7 @@ export default class BinaryTreeInfo {
    */
   drawNode(node, x, y) {
     const { ctx, options: { lineColor, rectColor, fontColor, rectHeight, } } = this
-    const content = node.element.toString()
+    const content = this.tree.getString(node)
     const text = ctx.measureText(content)
     const rectWidth = getWidth(text)
     ctx.save()
@@ -83,7 +83,7 @@ export default class BinaryTreeInfo {
   drawLeft(left, x, y) {
     if (left === null) return
     const { ctx, options: { rectHeight, lineColor } } = this
-    var content = left.element.toString()
+    var content = this.tree.getString(left)
     var text = ctx.measureText(content)
     const currentRectWidth = getWidth(text)
     const leftRectWidth = this.getLineWidth(left)
@@ -114,7 +114,7 @@ export default class BinaryTreeInfo {
   drawRight(right, x, y) {
     const { ctx, options: { rectHeight, lineColor } } = this
     if (right === null) return
-    var content = right.element.toString()
+    var content = this.tree.getString(right)
     var text = ctx.measureText(content)
     const currentRectWidth = getWidth(text)
     const rightRectWidth = this.getLineWidth(right)
@@ -140,7 +140,7 @@ export default class BinaryTreeInfo {
     const { ctx, tree } = this
     let width = 0
     if (node) {
-      let content = node.element.toString()
+      let content = tree.getString(node)
       let text = ctx.measureText(content)
       width += getWidth(text)
       width += this.getLineWidth(tree.getLeft(node))

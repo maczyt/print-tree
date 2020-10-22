@@ -27,6 +27,9 @@ class Tree {
   getRight(node) {
     return node.right
   }
+  getString(node) {
+    return node.element.toString()
+  }
 }
 BinaryTreeInfo.print(new Tree(root), {
   canvasWidth: 600,
