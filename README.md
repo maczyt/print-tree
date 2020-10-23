@@ -9,6 +9,28 @@ In terminal print tree data structure
 yarn add print-trees # or npm install print-trees
 ```
 
+## Doc
+
+``` ts
+import { BinaryTreeInfo } = 'print-trees'
+BinaryTreeInfo.print(tree, options)
+
+// tree 实例需要实现该 interface
+interface IBinaryTreeInfo {
+  getRoot(): Node // 返回树的根节点
+  getLeft(node): Node // 返回左节点
+  getRight(node): Node // 返回右节点
+  getString(node): string // 节点要展示的内容
+}
+
+interface IOptions {
+  canvasWidth: number
+  canvasHeight: number
+  output: ['log', 'image'] // log: 打印到控制台 or image: 输出一个binaryInfo.png文件
+  terminalImageOptions: object // 参考 terminal-image 库
+}
+```
+
 ## Example
 
 ``` js
