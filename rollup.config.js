@@ -1,5 +1,6 @@
 import typescript from "rollup-plugin-typescript"
 import sourceMaps from "rollup-plugin-sourcemaps"
+import { terser } from 'rollup-plugin-terser'
 
 module.exports = {
   input: "./src/index.ts",
@@ -8,7 +9,8 @@ module.exports = {
       exclude: "node_modules/**",
       typescript: require("typescript")
     }),
-    sourceMaps()
+    sourceMaps(),
+    terser()
   ],
   output: [
     {
