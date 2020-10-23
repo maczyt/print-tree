@@ -3,7 +3,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 var canvas = require('canvas');
-var terminalImage = require('terminal-image');
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -67,6 +66,7 @@ var defaultOptions = {
     canvasHeight: 300,
     font: 'bold 16px Consolas',
     textAlign: 'center',
+    output: 'log',
     terminalImageOptions: {
         width: '50%',
         height: '50%',
@@ -86,7 +86,7 @@ var BinaryTreeInfo = /** @class */ (function () {
     }
     BinaryTreeInfo.print = function (tree, options) {
         return __awaiter(this, void 0, void 0, function () {
-            var textAlign, font, canvasWidth, canvasHeight, canvas$1, ctx, startPoint, info, root, _a, _b;
+            var textAlign, font, canvasWidth, canvasHeight, canvas$1, ctx, startPoint, info, root, terminalImage, _a, _b, fs, path;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -100,11 +100,22 @@ var BinaryTreeInfo = /** @class */ (function () {
                         info = new BinaryTreeInfo(tree, ctx, options);
                         root = tree.getRoot();
                         info.drawNode(root, startPoint[0], startPoint[1]);
+                        if (!(options.output === 'log')) return [3 /*break*/, 2];
+                        terminalImage = require('terminal-image');
                         _b = (_a = console).log;
                         return [4 /*yield*/, terminalImage.buffer(canvas$1.toBuffer(), options.terminalImageOptions)];
                     case 1:
                         _b.apply(_a, [_c.sent()]);
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        if (options.output === 'image') {
+                            fs = require('fs');
+                            path = require('path');
+                            console.log(path.resolve(process.cwd(), 'binaryTree.png'));
+                            fs.writeFileSync(path.resolve(process.cwd(), 'binaryTree.png'), canvas$1.toBuffer());
+                        }
+                        _c.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });

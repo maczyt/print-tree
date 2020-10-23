@@ -34,4 +34,5 @@ class Tree {
 BinaryTreeInfo.print(new Tree(root), {
   canvasWidth: 600,
   canvasHeight: 300,
+  output: 'image'
 })

@@ -20,5 +20,9 @@ module.exports = {
       file: "dist/printTree.esm.js"
     }
   ],
-  external: ['canvas', 'terminal-image']
+  external: [
+    'canvas', 
+    'terminal-image',
+    'path', 'fs'
+  ]
 }

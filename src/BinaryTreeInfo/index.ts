@@ -1,5 +1,4 @@
 import { createCanvas } from 'canvas'
-import * as terminalImage from 'terminal-image'
 
 const defaultOptions = {
   lineColor: 'rgb(66,66,66)',
@@ -10,6 +9,7 @@ const defaultOptions = {
   canvasHeight: 300,
   font: 'bold 16px Consolas',
   textAlign: 'center',
+  output: 'log', // log or image
   terminalImageOptions: {
     width: '50%',
     height: '50%',
@@ -43,7 +43,14 @@ export default class BinaryTreeInfo {
     const info = new BinaryTreeInfo(tree, ctx, options)
     const root = tree.getRoot()
     info.drawNode(root, startPoint[0], startPoint[1])
-    console.log(await terminalImage.buffer(canvas.toBuffer(), options.terminalImageOptions))
+    if (options.output === 'log') {
+      const terminalImage = require('terminal-image')
+      console.log(await terminalImage.buffer(canvas.toBuffer(), options.terminalImageOptions))
+    } else if (options.output === 'image') {
+      const fs = require('fs')
+      const path = require('path')
+      fs.writeFileSync(path.resolve(process.cwd(), 'binaryTree.png'), canvas.toBuffer())
+    }
   }
 
   /**
