@@ -1,1 +1,1 @@
-export { default as BinaryTreeInfo } from './BinaryTreeInfo'
+export * from './BinaryTreeInfo'
