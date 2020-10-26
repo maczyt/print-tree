@@ -1,4 +1,9 @@
 # print-tree
+
+![version](https://img.shields.io/npm/v/print-trees?label=print-trees)
+![license](https://img.shields.io/npm/l/print-trees)
+![downloads](https://img.shields.io/npm/dw/print-trees)
+
 In terminal print tree data structure
 
 在学习数据结构中，二叉树显然是个非常重要的知识点，为了更方便的查看一个二叉树的结构，所以基于`node-canvas`、`terminal-image`绘制出可视化的二叉树到控制台中，便于学习理解二叉树的一些算法。
@@ -35,25 +40,50 @@ interface IOptions {
 
 ``` js
 const { BinaryTreeInfo } = require('../')
-class Node {
-  constructor(element, left=null, right=null, parent=null) {
-    this.element = element
-    this.left = left
-    this.right = right
-    this.parent = parent
+
+class BinarySearchTree {
+  constructor(compare) {
+    this.size = 0
+    this.compare = compare
+    this.root = null
   }
-}
-const root = new Node(1)
-root.left = new Node(2)
-root.right = new Node(3)
-root.left.left = new Node(4)
-root.left.right = new Node(5)
-root.right.left = new Node(6)
-root.right.right = new Node(7)
-class Tree {
-  constructor(root) {
-    this.root = root
+  isEmpty() {
+    return this.size === 0
   }
+  getSize() {
+    return this.size
+  }
+  add(e) {
+    if (this.isEmpty()) {
+      this.root = new BinarySearchTreeNode(e)
+      this.size ++
+    } else {
+      let node = this.root
+      let parent = null
+      let compareRes
+      while (node !== null) {
+        compareRes = this.compare(node.element, e)
+        parent = node
+        if (compareRes > 0) {
+          node = node.left
+        } else if (compareRes < 0) {
+          node = node.right
+        } else {
+          // 值相同 直接返回
+          return
+        }
+      }
+      const newNode = new BinarySearchTreeNode(e, null, null, parent)
+      if (compareRes > 0) {
+        parent.left = newNode
+      } else {
+        parent.right = newNode
+      }
+      this.size ++
+    }
+  }
+
+  // print
   getRoot() {
     return this.root
   }
@@ -63,10 +93,33 @@ class Tree {
   getRight(node) {
     return node.right
   }
+  getString(node) {
+    return node.element.toString()
+  }
 }
-BinaryTreeInfo.print(new Tree(root), {
-  canvasWidth: 600,
-  canvasHeight: 300,
+
+class BinarySearchTreeNode {
+  constructor(
+    element, 
+    left = null,
+    right = null,
+    parent = null
+  ) {
+    this.element = element
+    this.left = left
+    this.right = right
+    this.parent = parent
+  }
+}
+
+const tree = new BinarySearchTree((a, b) => a - b)
+for (let i = 0; i < 10; i ++) {
+  tree.add(~~(Math.random() * 100))
+}
+BinaryTreeInfo.print(tree, {
+  canvasWidth: 1600,
+  canvasHeight: 400,
+  output: 'image'
 })
 
 ```
